@@ -130,7 +130,8 @@ def get_roster_stats(team, season_end_year, data_format='PER_GAME', playoffs=Fal
                 df = df.append(row)
         df.rename(columns={'Player': 'PLAYER', 'Age': 'AGE',
                   'Tm': 'TEAM', 'Pos': 'POS'}, inplace=True)
-        df['PLAYER'] = df['PLAYER'].apply(
-            lambda name: remove_accents(name, team, season_end_year))
+        df['PLAYER'] = remove_accents(df['PLAYER'], team, season_end_year)
+        # df['PLAYER'].apply(
+        #     lambda name: remove_accents(name, team, season_end_year))
         df = df.reset_index().drop(['Rk', 'index'], axis=1)
         return df
