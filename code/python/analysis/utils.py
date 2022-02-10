@@ -85,6 +85,7 @@ def resid_plot(model,X,y):
     return None
 
 
+
 def scores(pipe, X, Y):
     """
     Display training and test error
