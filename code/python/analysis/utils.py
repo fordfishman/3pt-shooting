@@ -7,6 +7,28 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
 import matplotlib.pyplot as plt
 
+class MyImputer(SimpleImputer):
+
+    """
+    Subclass of SimpleImputer that allows feature names to be maintained
+    """
+
+    def transform(self, X, y=None):
+
+        feature_names = X.columns
+        
+        trans = super().transform(X)
+
+        return pd.DataFrame(trans, columns = feature_names)
+
+    def fit_transform(self, X, y=None):
+
+        feature_names = X.columns
+        
+        trans = super().fit_transform(X)
+
+        return pd.DataFrame(trans, columns = feature_names)
+
 def read_data(path):
 
     # read in data
@@ -18,36 +40,33 @@ def read_data(path):
     y1, y2 = df['next_3P%'], df['3pt_dif']
     return df, X, y1, y2
 
-def pipeline(features, ord_names:list):
+def pipeline(features):
 
     numerical_x = features.select_dtypes(include=['float64','int64']).columns
     categorical_x = features.select_dtypes(include=['object', 'bool']).columns
-    ordinal_x = pd.Index(ord_names)
-    quant_list = list()
-
-    for i in numerical_x:
-        if i not in ordinal_x:
-            quant_list.append(i)
-    quant_x = pd.Index(quant_list)
 
     numeric_transformer = Pipeline(steps=[
-        ('imputer', SimpleImputer(strategy='mean')),
+        ('imputer', MyImputer(strategy='mean')),
         ('scaler', StandardScaler())])
-
-    ordinal_transformer = Pipeline(steps=[
-        ('ord', OrdinalEncoder())])
 
     categorical_transformer = Pipeline(steps=[
         ('onehot', OneHotEncoder(handle_unknown='ignore'))])
 
-    preprocessor = ColumnTransformer(
-        transformers=[
-            ('cat', categorical_transformer, categorical_x),
-            ('ord', ordinal_transformer, ordinal_x),
-            ('num', numeric_transformer, quant_x)
-            ]
-        )
+    if len(numerical_x) > 0 and len(categorical_x) > 0:
+
+        preprocessor = ColumnTransformer(
+            transformers=[
+                ('cat', categorical_transformer, categorical_x),
+                ('num', numeric_transformer, numerical_x)
+                ]
+            )
+    elif len(numerical_x) > 0 : 
+        
+        preprocessor = numeric_transformer
     
+    else:
+        preprocessor = categorical_transformer
+
     return preprocessor
 
 def model_train(model, X, y, preprocessor, param_grid=None):
