@@ -13,6 +13,14 @@ With 3pt shooting being so valuable, being able to predict shooting development 
 
  ## Preprocessing
 
+Once the data has been read in, the data must be treated in order to be used for analysis. Several columns are removed that contain no data, as are features that are present across the three data frames. The data frames are then combined, and features with the same names but with different meanings are renamed. Primarily this includes the per 100 possession features, the season totals of which are present in the totals data frame.
 
+The largest preprocessing hurdle is accounting for players who were members of multiple teams in a given season. This can occur if a player was traded, or if their contracted was waived, and they were re-signed to a different team. For each team a player was on in a given season, the scraper returns one row of data. Given that I want each player in a given year to have a single row, this is problematic. 
+
+Every player-season combination that is listed more than once in the data frame was combined to be a single row. The season total statistics were simply added together across the various samples for each listing. For per possession stats, as data on the total number of possessions was unavailable, the final per possession stats were calculated as a weighted average of the games played for each team that season. 
+
+As the targets for this analysis are the next season's 3pt percentage, I wanted to remove any player seasons with fewer than 100 3pt attempts, as more attempts are needed for the percentage to stabilize. For the player seasons remaining, I checked to see the upcoming season for that player had also met the 100 3pt attempts criterion. If it did, then the upcoming season's 3pt percentage could be added as the target feature. 
+
+## Data Visualization
 
  ## Analysis
