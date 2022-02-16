@@ -88,7 +88,7 @@ def model_train(model, X, y, preprocessor, param_grid=None):
     model.fit(X,y)
 
     # print scores
-    print(scores(model, X, y))
+    scores(model, X, y)
 
     return model
 
@@ -114,8 +114,8 @@ def scores(pipe, X, Y):
     mse = mean_squared_error(Y,Y_p)
     mae = mean_absolute_error(Y,Y_p)
     score_string = 'rsquared:\t{0:0.3f}\nMean squared error:\t{1:0.6f}\nMean absolute error:\t{2:0.4f}'.format(r2,mse,mae)
-
-    return score_string
+    print(score_string)
+    return None
 
 # def scores(pipe, X_train, X_test, Y_train, Y_test):
 #     """
