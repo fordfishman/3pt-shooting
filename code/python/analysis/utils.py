@@ -1,6 +1,6 @@
 import pandas as pd
 from sklearn.compose import ColumnTransformer
-from sklearn.preprocessing import StandardScaler, OneHotEncoder, OrdinalEncoder
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.impute import SimpleImputer
 from sklearn.pipeline import Pipeline
 from sklearn.model_selection import GridSearchCV
@@ -29,18 +29,27 @@ class MyImputer(SimpleImputer):
 
         return pd.DataFrame(trans, columns = feature_names)
 
-def read_data(path):
-
+def read_data(path, target):
+    """
+    Read data file path and return data frame, features, and target
+    """
     # read in data
     df = pd.read_csv(path)
     # remove unwanted ID columns
     df = df.drop(columns=['index','PLAYER'])
-
+    # create feature dataframe without target
     X = df.drop(columns = ['next_3P%', '3pt_dif'])
-    y1, y2 = df['next_3P%'], df['3pt_dif']
-    return df, X, y1, y2
+    y = df[target]
+    return df, X, y
 
 def pipeline(features):
+    """
+    Create preprocessing pipeline using info on the features.
+    Numerical features will be undergo mean imputation, as well as scaling.
+    Categorical features undergo one-hot encoding.
+    If both categorical and numerical features are present,
+    the return type is a ColumnTransformer, otherwise it will be a single Pipeline.
+    """
 
     numerical_x = features.select_dtypes(include=['float64','int64']).columns
     categorical_x = features.select_dtypes(include=['object', 'bool']).columns
@@ -69,7 +78,7 @@ def pipeline(features):
 
     return preprocessor
 
-def model_train(model, X, y, preprocessor, param_grid=None):
+def model_train(model, X, y, preprocessor, param_grid=None, verbose=1):
     """
     Create and train, plot predicted values with residuals
     """
@@ -88,7 +97,8 @@ def model_train(model, X, y, preprocessor, param_grid=None):
     model.fit(X,y)
 
     # print scores
-    scores(model, X, y)
+    if verbose==1:
+        scores(model, X, y)
 
     return model
 
@@ -116,23 +126,3 @@ def scores(pipe, X, Y):
     score_string = 'rsquared:\t{0:0.3f}\nMean squared error:\t{1:0.6f}\nMean absolute error:\t{2:0.4f}'.format(r2,mse,mae)
     print(score_string)
     return None
-
-# def scores(pipe, X_train, X_test, Y_train, Y_test):
-#     """
-#     Display training and test error
-#     """
-#     # predicted Y value
-#     Y_trainp = pipe.predict(X_train) 
-#     Y_testp = pipe.predict(X_test)
-#     # training error 
-#     print('Training Error:')
-#     print('rsquared:\t{0:0.3f}'.format(r2_score(Y_train,Y_trainp)))
-#     print('Mean squared error:\t{0:0.6f}'.format(mean_squared_error(Y_train,Y_trainp)))
-#     print('Mean absolute error:\t{0:0.4f}'.format(mean_absolute_error(Y_train,Y_trainp)))
-#     print()
-#     # test error
-#     print('Test Error:')
-#     print('rsquared:\t{0:0.3f}'.format(r2_score(Y_test,Y_testp)))
-#     print('Mean squared error:\t{0:0.6f}'.format(mean_squared_error(Y_test,Y_testp)))
-#     print('Mean absolute error:\t{0:0.4f}'.format(mean_absolute_error(Y_test,Y_testp)))
-#     return None
