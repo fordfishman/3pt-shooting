@@ -50,11 +50,11 @@ For this reason, the features were treated with cube root transformation. This a
 
 <br>
 
-
+![Figure 4](figs/target_corr.png)
 
 <br>
 
-![Figure 4](figs/corrplot.png)
+![Figure 5](figs/corrplot.png)
 
 <br>
 
