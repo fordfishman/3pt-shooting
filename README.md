@@ -50,14 +50,23 @@ For this reason, the features were treated with cube root transformation. This a
 
 <br>
 
+### Correlations
+In order to have predictive power, several features need to have reasonably high correlation with the target feature. Here, I plot the 5 features with the highest Pearson's R with the next season's shooting percentage: free throw shooting percentage (FT%), 3PT attempts per 100 possessions (3P_poss), 3PT shooting percentage (3PT%), effective field goal percentage (eFG%), and true-shooting percentage (TS%). eFG% and TS% are different composite methods to estimate overall shooting aptitude that take into account the increased value of 3PT shots. TS% also takes free-throw shooting into account.
+
+<br>
+
 ![Figure 4](figs/target_corr.png)
+
+<br>
+
+None of these individual features are strongly correlated with the target feature, so it is unlikely that any model formed from these data will predict next season's shooting with particularly high accuracy. However, these features providing the most information about the target makes a great deal of sense. One would expect one season's shooting to be somewhat predictive of the next season's shooting. Similarly, FT% is commonly used to project the 3PT shooting of NBA draft prospects, as many pre-NBA players do not shoot enough 3PT shots to have a reasonable sample size. The number of 3PT shots taken per 100 possessions having some predictive power is also reasonable, as the best shooters tend to take more shots from 3PT range.
+
+Here, the correlation between all features is also displayed. Many features are slightly positively correlated with each other. 3PT attempt rate (3PAr, the percentage of field goals taken from 3) is strongly negatively associated with several features, as is defensive rating (DRtg_poss).
 
 <br>
 
 ![Figure 5](figs/corrplot.png)
 
 <br>
-
  
-
 ## Analysis
