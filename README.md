@@ -1,4 +1,5 @@
-# 3pt-shooting
+# Projecting NBA 3PT Shooting
+
 NBA 3pt shooting is a vital aspect of any NBA team's offense. Besides the obvious advantage of giving your team more points than a 2pt shot, 3pt shots allow teams to stretch the floor. With several high-percentage shooters around the perimeter, there is more room on the interior for players with the ball to operate and find efficient shots. The best rim protectors, like Rudy Gobert, must decide between leaving open deadly shooters or abandoning the interior, or paint, where they provide the most value.
 
 With 3pt shooting being so valuable, being able to predict shooting development from year to year is quite important. Shooting performance from year to year can vary greatly, however. Understanding the factors that can predict a player's shooting in the next season would be quite beneficial for constructing a team. Contract decisions in free-agency, extension talks, or trade negotiations would greatly benefit from the knowledge that a player is likely to perform better, or perhaps worse, in the upcoming season. 
@@ -19,8 +20,44 @@ The largest preprocessing hurdle is accounting for players who were members of m
 
 Every player-season combination that is listed more than once in the data frame was combined to be a single row. The season total statistics were simply added together across the various samples for each listing. For per possession stats, as data on the total number of possessions was unavailable, the final per possession stats were calculated as a weighted average of the games played for each team that season. 
 
-As the targets for this analysis are the next season's 3pt percentage, I wanted to remove any player seasons with fewer than 100 3pt attempts, as more attempts are needed for the percentage to stabilize. For the player seasons remaining, I checked to see the upcoming season for that player had also met the 100 3pt attempts criterion. If it did, then the upcoming season's 3pt percentage could be added as the target feature. 
+As the targets for this analysis are the next season's 3pt percentage, I wanted to remove any player seasons with fewer than 100 3pt attempts, as more attempts are needed for the percentage to stabilize. For the player seasons remaining, I checked to see the upcoming season for that player had also met the 100 3pt attempts criterion. If it did, then the upcoming season's 3pt percentage was then added as the target feature. 
 
 ## Data Visualization
 
- ## Analysis
+<br>
+
+### Feature Distributions
+
+The target feature is displayed here as a proportion, though it will still be referred to as a percentage by convention. You can see it is approximately normally distributed. The mean of the distribution is at 0.361, and it has a standard deviation of 0.0418.
+
+![Figure 1](figs/target_dist.png)
+
+<br>
+
+The distributions of each of the features was also visualized. A few were selected here to show. Some features are normally distributed, such as FG%, which is the percentage of field goals attempted that were successfully made. Others exhibit skew, such as FGA or field goal attempts, the total number of shot attempts in a season. A number of skewed features also contain both positive and negative values, the example being OBPM, or offensive box plus-minus, a metric trying to ascertain player offensive value.
+
+<br>
+
+![Figure 2](figs/untrans_dists.png)
+
+<br>
+
+For this reason, the features were treated with cube root transformation. This allows more automated transformation, as log transforming data with negative values requires adding some constant to all values. Below, the effect of the transformations on the non-normal variables FGA and OBPM are displayed. FGA is relatively normal now. OBPM has less skew, but the shape of the distribution is still not entirely normal. To see all of the untransformed and transformed distributions, please view `code/python/analysis/visualize.ipynb`.
+
+<br>
+
+![Figure 3](figs/trans_dists.png)
+
+<br>
+
+
+
+<br>
+
+![Figure 4](figs/corrplot.png)
+
+<br>
+
+ 
+
+## Analysis
