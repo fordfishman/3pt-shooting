@@ -70,3 +70,5 @@ Here, the correlation between all features is also displayed. Many features are 
 <br>
  
 ## Analysis
+
+To predict player 3PT shooting in the upcoming season using current season data transformed above, I implemented several machine learning algorithms from the `scikit-learn` library. The custom `utils` module contains several functions imported here, such as `read_data`, which takes the path to the transformed or untransformed data and returns the features and the target, as well as the original data frame. Each of the models is 
