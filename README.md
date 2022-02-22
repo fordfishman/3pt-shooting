@@ -71,4 +71,23 @@ Here, the correlation between all features is also displayed. Many features are 
  
 ## Analysis
 
-To predict player 3PT shooting in the upcoming season using current season data transformed above, I implemented several machine learning algorithms from the `scikit-learn` library. The custom `utils` module contains several functions imported here, such as `read_data`, which takes the path to the transformed or untransformed data and returns the features and the target, as well as the original data frame. Each of the models is 
+To predict player 3PT shooting in the upcoming season using current season data transformed above, I implemented several machine learning algorithms from the `scikit-learn` library. The custom `utils` module contains several functions imported here, such as `utils.read_data()`, which takes the path to the transformed or untransformed data and returns the features and the target, as well as the original data frame. 
+
+After splitting the data into training and test sets, each of the models is trained using the `utils.model_train()` function. This function takes several functions, including a `scikit-learn` model, training features, training response variable, and a preprocessing `scikit-learn` `Pipeline`. This preprocessing `Pipeline` is created with `utils.pipeline()`, which creates transformers for both numerical and categorical variables. Numerical variables undergo mean imputation and scaling. EXPLAIN SCALING. Categorical features undergo one-hot encoding. Training data is fit and transformed with this pipeline. `utils.model_train()` can also perform hyperparameter tuning if a parameter grid is provided. To score the model, `utils.scores()` is invoked, which prints out the following regression scores: $R^2$, mean squared error (MSE), and mean absolute error (MAE). 
+
+### Dummy Model
+To compare MSE and MAE values to a baseline, I implemented a `DummyRegressor()`, which simply returns the mean target value for every sample. This returned a test MSE of 0.018 and a MAE of 0.033. These values will be used as the threshold for other models here. 
+
+### Linear Models
+
+Both simple OLS regression and ridge regression were implemented for linear models. 
+
+### Random Forest
+
+### Neural Network
+
+I also implemented a neural network with `tensorflow` and `keras`. This model is outperformed by the linear models
+
+## Conclusions
+
+If predicting player 3PT percentage from raw statistics was easy, NBA scouts and talent evaluators would be out of a job. Thankfully for them, there are many factors that play into player development, many of which are not 
