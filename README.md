@@ -75,19 +75,49 @@ To predict player 3PT shooting in the upcoming season using current season data 
 
 After splitting the data into training and test sets, each of the models is trained using the `utils.model_train()` function. This function takes several functions, including a `scikit-learn` model, training features, training response variable, and a preprocessing `scikit-learn` `Pipeline`. This preprocessing `Pipeline` is created with `utils.pipeline()`, which creates transformers for both numerical and categorical variables. Numerical variables undergo mean imputation and scaling. EXPLAIN SCALING. Categorical features undergo one-hot encoding. Training data is fit and transformed with this pipeline. `utils.model_train()` can also perform hyperparameter tuning if a parameter grid is provided. To score the model, `utils.scores()` is invoked, which prints out the following regression scores: $R^2$, mean squared error (MSE), and mean absolute error (MAE). 
 
+
+*Table 1: Test scores for various models.*
+| Model          | Test $R^2$ | Test MSE | Test MAE |
+|----------------|------------|----------|----------|
+| Dummy          | 0.000      | 0.00182  | 0.0331   |
+| OLS            | 0.098      | 0.00149  | 0.0305   |
+| Ridge          | 0.158      | 0.00139  | 0.0293   |
+| Random Forest  | 0.175      | 0.00136  | 0.0293   |
+| Neural Network | 0.153      | 0.00150  | 0.0302   |
+
 ### Dummy Model
-To compare MSE and MAE values to a baseline, I implemented a `DummyRegressor()`, which simply returns the mean target value for every sample. This returned a test MSE of 0.018 and a MAE of 0.033. These values will be used as the threshold for other models here. 
+To compare MSE and MAE values to a baseline, I implemented a `DummyRegressor()`, which simply returns the mean target value for every sample. This returned a test MSE of 0.018 and a MAE of 0.033 (or 3.3%). These values will be used as the threshold for other models here. 
+
+*Table 1: Test scores on various models.*
 
 ### Linear Models
 
-Both simple OLS regression and ridge regression were implemented for linear models. 
+Both simple OLS regression and ridge regression were implemented for linear models. Of all the models implemented, OLS had the worse performance with an $R^2$, an MSE of 0.00149 and an MAE of 0.0305. Adding in L2 regularization with a ridge model improves the performance. Hyperparameter tuning was used to improve perfomance by setting the regularization term `alpha` to ~233.6, fitting the intercept as a bias term, and using the `saga` solver, returning an $R^2$ of 0.158, an MSE of 0.00139, and a MAE of 0.0293. This shows that regularization is beneficial to improving model performance. 
+
+The ridge model shows that the most important features for predicting the next season's 3PT shooting are largely inline with the Pearson's R values described above. FT% and 3P% are the best predictors. Many stats that attempt to measure total player value are also positive indicators, such as offensive win shares (OWS) and box plus-minus (BPM). This would indicate that the better the player, the more likely shooting improvement is. Free-throw rate (FTr) and games played (G) are negatively associated with the target. These are more difficult to explain. One possible explanation is that higher FTr would imply that a player takes a smaller proportion of shots from 3PT range. 
+
+The team a player is on may also have some effect. Golden State and San Antonio players are more likely to have higher 3P%, while Oklahoma City and Atlanta players are more likely to have lower 3P%. These team-based effects may not be predictive in future years, however, as team staffs and rosters turnover. 
+
+<br>
+
+![Figure 6](figs/ridge_coefficients.png)
 
 ### Random Forest
 
+To see if essemble methods would improve performance, I implemented a random forest regression model. Splits were determined by minimizing squared error. Hyperparameter tuning selected the following parameters: max tree depth of 1067, max features used in a split set to the square root of the total number of features, minimum samples per leaf of 1, minimum samples per split of 2, and the number of trees in the forest was set to 916. This model recieved an $R^2$ of 0.175, an improvement over ridge. However, the metrics are more comparable to the ridge model, with a MSE of 0.00136, and a MAE of 0.0293. 
+
+The top features from the random forest are slightly more inline with the correlation values compared to the ridge model, with the top 5 features being the same as the top 5 Pearson's R values. Here, 3P% is the most important feature. Unlike the ridge model, the top features of random forest do not include any specific teams or composite metrics trying to measure player value. 
+
+<br>
+
+![Figure 7](figs/rf_coefficients.png)
+
 ### Neural Network
 
-I also implemented a neural network with `tensorflow` and `keras`. This model is outperformed by the linear models
+I also implemented a neural network with `tensorflow` and `keras`. This model is outperformed by the linear and random forest models. 
 
 ## Conclusions
 
-If predicting player 3PT percentage from raw statistics was easy, NBA scouts and talent evaluators would be out of a job. Thankfully for them, there are many factors that play into player development, many of which are not 
+If predicting player 3PT percentage from raw statistics was easy, NBA scouts and talent evaluators would be out of a job. Thankfully for them, there are many factors that play into player development, many of which are not accounted for in the Basketball Reference database. These include both tangible quantities like player measurements, injury histories, time put intoand shooting performance in practice, as well as intangible qualities, such as player personality and drive, shooting form, and the quality of trainers and coaching staff members. Finally, it must be acknowledged that even NBA front offices who have all of this information at their disposal have difficulty projecting the shooting ability of many of their players. 
+
+While these models cannot predict future shooting with great accuracy, they do provide insight into what the best predictors are. 3P% as a top predictor is very reasonable, as shooting should stay somewhat similar from year to year. Free throw shooting percentage and form are often used to evalute potential 3PT shooting in prospects, so it is also reasonable it is a strong predictor here. 3PT shooting is a rather noisy statistic with a large degree of variance from year to year, but this analysis provides a basic quantitive frame work for inferring future performance. 
